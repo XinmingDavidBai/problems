@@ -56,10 +56,13 @@ char* convert(char* s, int numRows) {
       char val = parent->val;
       s[c] = val;
       c++;
+      node* remove = parent;
       parent = parent->next;
+      free(remove);
     }
-  }
 
+  }
+  
   free(nodes);
   return s;
 }
