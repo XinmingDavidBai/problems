@@ -1,132 +1,176 @@
-// !!!!!Unfinished!!!!!
-#include <math.h>
-double recursiveHelper(int *nums1, int *nums2, int nums1start, int nums1end,
-                       int nums2start, int nums2end, int prevLower,
-                       int prevUpper) {
-  int lower;
-  int upper;
 
-  char lowerIs1;
-  char upperIs1;
+double findMedianSortedArrays(int *nums1, int nums1Size, int *nums2, int nums2Size) {
+    if (nums1Size == 0) {
+        if (nums2Size % 2 == 0) {
+            int nums2MedianPos = nums2Size / 2;
 
-  int nums1lower;
-  int nums1upper;
+            int nums2lower = nums2[nums2MedianPos - 1];
+            int nums2upper = nums2[nums2MedianPos];
 
-  int nums1Size = nums1end - nums1start;
-  double nums1MedianPos = nums1start + (double)nums1Size / 2;
-  if (nums1Size % 2 == 0) {
-    nums1lower = nums1[(int)floor(nums1MedianPos)];
-    nums1upper = nums1[(int)ceil(nums1MedianPos)];
-  } else {
-    int median = nums1[(int)(nums1start + nums1Size / 2)];
-    nums1lower = median;
-    nums1upper = median;
-  }
+            return (double) (nums2lower + nums2upper) / 2;
+        } else {
+            return (double) nums2[(int)(nums2Size / 2)];
+        }    
+    }
+    if (nums2Size == 0) {
+        if (nums1Size % 2 == 0) {
+            int nums1MedianPos = nums1Size / 2;
 
-  int nums2lower;
-  int nums2upper;
-  int nums2Size = nums1end - nums1start;
-  double nums2MedianPos = nums2start + (double)nums2Size / 2;
-  if (nums2Size % 2 == 0) {
-    nums2lower = nums2[(int)floor(nums2MedianPos)];
-    nums2upper = nums2[(int)ceil(nums2MedianPos)];
-  } else {
-    int median = nums2[(int)(nums1start + nums2Size / 2)];
-    nums2lower = median;
-    nums2upper = median;
-  }
+            int nums1lower = nums1[nums1MedianPos - 1];
+            int nums1upper = nums1[nums1MedianPos];
+            return (double) (nums1lower + nums1upper) / 2;
+        } else {
+            return (double) nums1[(int)(nums1Size / 2)];
+        }   
+    }
+    int totalSize = nums1Size + nums2Size;
 
-  if (nums1lower < nums2lower) {
-    lower = nums1lower;
-    lowerIs1 = 1;
-  } else {
-    lower = nums2lower;
-    lowerIs1 = 0;
-  }
+    if (nums1[nums1Size - 1] <= nums2[0]) {
+        if (totalSize % 2 == 0) {
 
-  if (nums1upper > nums2upper) {
-    upper = nums1upper;
-    upperIs1 = 1;
-  } else {
-    upper = nums2upper;
-    upperIs1 = 0;
-  }
+            if (nums1Size == nums2Size) {
+                return  ((double)nums1[nums1Size - 1] + nums2[0]) / 2;
+            }
+            
+            if (nums1Size > nums2Size) {
+                return ((double) (nums1[totalSize / 2 - 1] + nums1[totalSize / 2 ]) / 2);
+            }
+            return  ( (double) (nums2[totalSize / 2 - 1 - nums1Size] + nums2[totalSize / 2 - nums1Size]) / 2);
 
-  lower = lower > prevLower ? lower : prevLower;
-  upper = upper < prevUpper ? upper : prevUpper;
+        }
 
-  int new1start = lowerIs1 ? nums1MedianPos : nums1start;
-  int new1end = upperIs1 ? nums1MedianPos : nums1end;
+        if (nums1Size > nums2Size) {
+            return (double) nums1[totalSize / 2];
+        }
 
-  int new2start = lowerIs1 ? nums2start : nums2MedianPos;
-  int new2end = upperIs1 ? nums2end : nums2MedianPos;
+        return (double) nums2[totalSize / 2 - nums1Size];
 
-  if (new1start == new1end && new2start == new2end) {
-    return (double)(lower + upper) / 2;
-  } else {
-    return recursiveHelper(nums1, nums2, new1start, new1end, new2start, new2end,
-                           lower, upper);
-  }
+    }      
+
+    if (nums2[nums2Size - 1] <= nums1[0]) {
+        if (totalSize % 2 == 0) {
+
+            if (nums1Size == nums2Size) {
+                return  ((double)nums2[nums2Size - 1] + nums1[0]) / 2;
+            }
+            
+            if (nums2Size > nums1Size) {
+                return ((double) (nums2[totalSize / 2 - 1] + nums2[totalSize / 2 ]) / 2);
+            }
+
+            return ((double) (nums1[totalSize / 2 - 1 - nums2Size] + nums1[totalSize / 2 - nums2Size]) / 2);
+
+        }
+
+        if (nums2Size > nums1Size) {
+            return (double) nums2[totalSize / 2];
+        }
+
+        return (double) nums1[totalSize / 2 - nums2Size];
+    }
+    int remaining;
+    if (totalSize % 2 == 0) {
+        remaining = totalSize / 2;
+    } else {
+        remaining = totalSize / 2 + 1;
+    }
+
+    if (totalSize % 2 == 0) {
+        char second = 0;
+        int saved;
+
+        int p1;
+        int p2;
+        while (remaining > -1) {
+            remaining--;
+            if (p1 >= nums1Size) {
+                if (second) {
+                    return (double) (saved + nums2[p2]) / 2;
+                }
+                if (!remaining) {
+                    second = 1;
+                    saved = nums2[p2];
+                }
+                p2++;
+            }
+            else if (p2 >= nums2Size) {
+                if (second) {
+                    return (double) (saved + nums1[p1]) / 2;
+                }
+                if (!remaining) {
+                    second = 1;
+                    saved = nums1[p1];
+                }
+                p1++;
+            }
+            else if (nums1[p1] < nums2[p2]) {
+                if (second) {
+                    return (double) (saved + nums1[p1]) / 2;
+                }
+                if (!remaining) {
+                    second = 1;
+                    saved = nums1[p1];
+                } 
+                    p1++;
+                
+            }
+            else if (second) {
+                return (double) (saved + nums2[p2]) / 2;
+            }
+            else if (!remaining) {
+                second = 1;
+                saved = nums2[p2];
+                p2++;
+
+            } else {
+            p2++;
+
+            }
+        }
+    } else {
+        int nums1Median = nums1[(nums1Size - 1) / 2];
+        int nums2Median = nums2[(nums2Size - 1) / 2];
+
+        int p1 = 0;
+        int p2 = 0;
+
+        if (nums1Median < nums2Median) {
+            p1 = (nums1Size -1 ) / 2 + 1;
+            remaining -= (nums1Size - 1 )/ 2 + 1;
+        } else {
+            p2 = (nums2Size - 1) / 2 + 1;
+            remaining -= (nums2Size - 1)/ 2 + 1;
+        }
+
+        while (remaining) {
+            remaining--;
+            if (p1 >= nums1Size) {
+                if (!remaining) {
+                    return nums2[p2];
+                }
+                p2++;
+            }
+            else if (p2 >= nums2Size) {
+                if (!remaining) {
+                    return nums1[p1];
+                }
+                p1++;
+            }
+            else if (nums1[p1] < nums2[p2]) {
+                if (!remaining) {
+                    return nums1[p1];
+                } 
+                    p1++;
+                
+            }
+            else if (!remaining) {
+                return nums2[p2];
+            } else {
+            p2++;
+
+            }
+        }
+    }
+  return 0;
 }
-double findMedianSortedArrays(int *nums1, int nums1Size, int *nums2,
-                              int nums2Size) {
-  int lower;
-  int upper;
 
-  char lowerIs1;
-  char upperIs1;
-
-  int nums1lower;
-  int nums1upper;
-
-  double nums1MedianPos = (double)nums1Size / 2;
-  if (nums1Size % 2 == 0) {
-    nums1lower = nums1[(int)floor(nums1MedianPos)];
-    nums1upper = nums1[(int)ceil(nums1MedianPos)];
-  } else {
-    int median = nums1[(int)(nums1Size / 2)];
-    nums1lower = median;
-    nums1upper = median;
-  }
-
-  int nums2lower;
-  int nums2upper;
-  double nums2MedianPos = (double)nums2Size / 2;
-  if (nums2Size % 2 == 0) {
-    nums2lower = nums2[(int)floor(nums2MedianPos)];
-    nums2upper = nums2[(int)ceil(nums2MedianPos)];
-  } else {
-    int median = nums2[(int)(nums2Size / 2)];
-    nums2lower = median;
-    nums2upper = median;
-  }
-
-  if (nums1lower < nums2lower) {
-    lower = nums1lower;
-    lowerIs1 = 1;
-  } else {
-    lower = nums2lower;
-    lowerIs1 = 0;
-  }
-
-  if (nums1upper > nums2upper) {
-    upper = nums1upper;
-    upperIs1 = 1;
-  } else {
-    upper = nums2upper;
-    upperIs1 = 0;
-  }
-
-  int new1start = lowerIs1 ? nums1MedianPos : 0;
-  int new1end = upperIs1 ? nums1MedianPos : nums1Size - 1;
-
-  int new2start = lowerIs1 ? 0 : nums2MedianPos;
-  int new2end = upperIs1 ? nums2Size - 1 : nums2MedianPos;
-
-  if (new1start == new1end && new2start == new2end) {
-    return (double)(lower + upper) / 2;
-  } else {
-    return recursiveHelper(nums1, nums2, new1start, new1end, new2start, new2end,
-                           lower, upper);
-  }
-}
