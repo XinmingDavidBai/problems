@@ -102,14 +102,6 @@ int compLeft(const void *a, const void *b) {
   return t > 0 ? 1 : t == 0 ? 0 : -1;
 }
 
-int compRight(const void *a, const void *b) {
-  range *c = (range *)a;
-  range *d = (range *)b;
-  long t = c->right - d->right;
-  
-  return t > 0 ? 1 : t == 0 ? 0 : -1;
-}
-
 unsigned long b (char* str) {
   int len = strlen(str);
   unsigned long acc = 0;
@@ -142,13 +134,10 @@ unsigned long b (char* str) {
     charCount++;
   } 
   range* leftSorted = malloc(lineCount * sizeof(range));
-  range* rightSorted = malloc(lineCount * sizeof(range));
 
   memcpy(leftSorted, ranges, lineCount * sizeof(range));
-  memcpy(rightSorted, ranges, lineCount * sizeof(range));
 
   qsort(leftSorted, lineCount, sizeof(range), compLeft);
-  qsort(rightSorted, lineCount, sizeof(range), compRight);
   
   for (int i = 0; i < lineCount; i++) {
     range l = leftSorted[i];
