@@ -7,7 +7,6 @@
 typedef struct {
     long left;
     long right;
-    int index;
 } range;
 
 char* readFile(char* filename){ 
@@ -136,7 +135,6 @@ unsigned long b (char* str) {
     } else if (c == '\n') {
         ranges[line].right = counter;
         counter = 0;
-        ranges[line].index = line;
         line++;
     } else if (isdigit(c)) {
         counter = counter * 10 + (c - '0'); 
